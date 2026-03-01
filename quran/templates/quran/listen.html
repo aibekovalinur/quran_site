@@ -1,0 +1,121 @@
+{% extends 'quran/base.html' %}
+
+{% block title %}Слушать Коран{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1 class="page-title"><i class="fas fa-headphones"></i> Слушать Коран</h1>
+        <p class="page-subtitle">Выберите чтеца и суру для прослушивания</p>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <!-- Reciter Selection -->
+        <div class="listen-reciters">
+            <h2 class="section-subtitle">Выберите чтеца</h2>
+            <div class="reciters-grid">
+                {% for reciter in reciters %}
+                <div class="reciter-card selectable {% if forloop.first %}selected{% endif %}"
+                     data-reciter-id="{{ reciter.identifier }}"
+                     data-audio-base="{{ reciter.audio_base_url }}">
+                    <div class="reciter-avatar">
+                        <i class="fas fa-user"></i>
+                    </div>
+                    <h3>{{ reciter.name }}</h3>
+                    <p class="reciter-arabic">{{ reciter.name_arabic }}</p>
+                    <p class="reciter-style">{{ reciter.style }}</p>
+                </div>
+                {% endfor %}
+            </div>
+        </div>
+
+        <!-- Audio Player -->
+        <div class="listen-player" id="listenPlayer">
+            <div class="listen-player-inner">
+                <div class="now-playing">
+                    <span class="now-playing-label"><i class="fas fa-music"></i> Сейчас играет:</span>
+                    <span class="now-playing-name" id="nowPlayingName">Выберите суру</span>
+                </div>
+                <audio id="listenAudio" controls></audio>
+            </div>
+        </div>
+
+        <!-- Surah Grid for Listening -->
+        <h2 class="section-subtitle">Выберите суру</h2>
+        <div class="surah-grid listen-surah-grid">
+            {% for surah in surahs %}
+            <div class="surah-card listen-surah-card"
+                 data-surah-number="{{ surah.number|stringformat:'03d' }}"
+                 data-surah-name="{{ surah.name_latin }}">
+                <div class="surah-number">{{ surah.number }}</div>
+                <div class="surah-info">
+                    <div class="surah-name-arabic">{{ surah.name_arabic }}</div>
+                    <div class="surah-name-latin">{{ surah.name_latin }}</div>
+                </div>
+                <div class="play-icon">
+                    <i class="fas fa-play-circle"></i>
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+document.addEventListener('DOMContentLoaded', function() {
+    const reciterCards = document.querySelectorAll('.reciter-card.selectable');
+    const surahCards = document.querySelectorAll('.listen-surah-card');
+    const audio = document.getElementById('listenAudio');
+    const nowPlaying = document.getElementById('nowPlayingName');
+    let currentBaseUrl = '';
+
+    // Set initial reciter
+    const firstReciter = document.querySelector('.reciter-card.selected');
+    if (firstReciter) {
+        currentBaseUrl = firstReciter.dataset.audioBase;
+    }
+
+    // Check URL params for pre-selected reciter
+    const params = new URLSearchParams(window.location.search);
+    const preselectedReciter = params.get('reciter');
+    if (preselectedReciter) {
+        reciterCards.forEach(card => {
+            card.classList.remove('selected');
+            if (card.dataset.reciterId === preselectedReciter) {
+                card.classList.add('selected');
+                currentBaseUrl = card.dataset.audioBase;
+            }
+        });
+    }
+
+    // Reciter selection
+    reciterCards.forEach(card => {
+        card.addEventListener('click', function() {
+            reciterCards.forEach(c => c.classList.remove('selected'));
+            this.classList.add('selected');
+            currentBaseUrl = this.dataset.audioBase;
+        });
+    });
+
+    // Surah play
+    surahCards.forEach(card => {
+        card.addEventListener('click', function() {
+            const surahNum = this.dataset.surahNumber;
+            const surahName = this.dataset.surahName;
+            const url = currentBaseUrl + '/' + surahNum + '.mp3';
+
+            surahCards.forEach(c => c.classList.remove('playing'));
+            this.classList.add('playing');
+
+            audio.src = url;
+            audio.play();
+            nowPlaying.textContent = surahName;
+        });
+    });
+});
+</script>
+{% endblock %}

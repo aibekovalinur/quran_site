@@ -1,0 +1,116 @@
+{% extends 'quran/base.html' %}
+{% load static %}
+
+{% block title %}Главная{% endblock %}
+
+{% block content %}
+<!-- Hero Section -->
+<section class="hero">
+    <div class="hero-overlay"></div>
+    <div class="container hero-content">
+        <div class="hero-arabic">بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</div>
+        <h1>Священный Коран</h1>
+        <p class="hero-subtitle">Читайте и слушайте Коран онлайн с переводом</p>
+        <div class="hero-stats">
+            <div class="stat">
+                <span class="stat-number">{{ total_surahs }}</span>
+                <span class="stat-label">Сур</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">{{ total_ayahs }}</span>
+                <span class="stat-label">Аятов</span>
+            </div>
+            <div class="stat">
+                <span class="stat-number">{{ reciters|length }}</span>
+                <span class="stat-label">Чтецов</span>
+            </div>
+        </div>
+        <div class="hero-buttons">
+            <a href="{% url 'quran:surah_list' %}" class="btn btn-primary btn-lg">
+                <i class="fas fa-book-quran"></i> Читать Коран
+            </a>
+            <a href="{% url 'quran:listen' %}" class="btn btn-outline btn-lg">
+                <i class="fas fa-headphones"></i> Слушать
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Features Section -->
+<section class="section features">
+    <div class="container">
+        <h2 class="section-title">Возможности</h2>
+        <div class="features-grid">
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-book-open"></i></div>
+                <h3>Чтение Корана</h3>
+                <p>Полный текст Корана на арабском языке с переводом на английский</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-headphones-alt"></i></div>
+                <h3>Аудио</h3>
+                <p>Слушайте Коран в исполнении {{ reciters|length }} известных чтецов</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-search"></i></div>
+                <h3>Поиск</h3>
+                <p>Быстрый поиск по названию суры</p>
+            </div>
+            <div class="feature-card">
+                <div class="feature-icon"><i class="fas fa-mobile-alt"></i></div>
+                <h3>Адаптивный</h3>
+                <p>Работает на телефоне, планшете и компьютере</p>
+            </div>
+        </div>
+    </div>
+</section>
+
+<!-- Popular Surahs -->
+<section class="section surahs-preview">
+    <div class="container">
+        <h2 class="section-title">Популярные суры</h2>
+        <div class="surah-grid">
+            {% for surah in surahs %}
+            <a href="{% url 'quran:surah_detail' surah.number %}" class="surah-card">
+                <div class="surah-number">{{ surah.number }}</div>
+                <div class="surah-info">
+                    <div class="surah-name-arabic">{{ surah.name_arabic }}</div>
+                    <div class="surah-name-latin">{{ surah.name_latin }}</div>
+                    <div class="surah-meta">{{ surah.name_translation }} • {{ surah.ayah_count }} аятов</div>
+                </div>
+                <div class="surah-type {{ surah.revelation_type|lower }}">
+                    {{ surah.revelation_type }}
+                </div>
+            </a>
+            {% endfor %}
+        </div>
+        <div class="text-center mt-2">
+            <a href="{% url 'quran:surah_list' %}" class="btn btn-primary">
+                Все 114 сур <i class="fas fa-arrow-right"></i>
+            </a>
+        </div>
+    </div>
+</section>
+
+<!-- Reciters Section -->
+<section class="section reciters-preview">
+    <div class="container">
+        <h2 class="section-title">Чтецы Корана</h2>
+        <div class="reciters-grid">
+            {% for reciter in reciters %}
+            <div class="reciter-card">
+                <div class="reciter-avatar">
+                    <i class="fas fa-user"></i>
+                </div>
+                <h3>{{ reciter.name }}</h3>
+                <p class="reciter-arabic">{{ reciter.name_arabic }}</p>
+                <p class="reciter-style">{{ reciter.style }}</p>
+                <a href="{% url 'quran:listen' %}?reciter={{ reciter.identifier }}" class="btn btn-sm btn-outline">
+                    <i class="fas fa-play"></i> Слушать
+                </a>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}

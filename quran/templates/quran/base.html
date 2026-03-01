@@ -1,0 +1,85 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="ar" dir="ltr">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>{% block title %}Quran Online{% endblock %} — القرآن الكريم</title>
+
+    <!-- Google Fonts -->
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link href="https://fonts.googleapis.com/css2?family=Amiri:ital,wght@0,400;0,700;1,400&family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.5.1/css/all.min.css">
+
+    <!-- Custom CSS -->
+    <link rel="stylesheet" href="{% static 'quran/css/style.css' %}">
+
+    {% block extra_css %}{% endblock %}
+</head>
+<body>
+    <!-- Navigation -->
+    <nav class="navbar">
+        <div class="container">
+            <a href="{% url 'quran:index' %}" class="navbar-brand">
+                <span class="brand-icon">☪</span>
+                <span class="brand-text">Quran <span class="brand-highlight">Online</span></span>
+            </a>
+
+            <button class="nav-toggle" id="navToggle" aria-label="Toggle navigation">
+                <i class="fas fa-bars"></i>
+            </button>
+
+            <ul class="nav-links" id="navLinks">
+                <li><a href="{% url 'quran:index' %}" class="{% if request.resolver_match.url_name == 'index' %}active{% endif %}">
+                    <i class="fas fa-home"></i> Главная
+                </a></li>
+                <li><a href="{% url 'quran:surah_list' %}" class="{% if request.resolver_match.url_name == 'surah_list' %}active{% endif %}">
+                    <i class="fas fa-book-quran"></i> Суры
+                </a></li>
+                <li><a href="{% url 'quran:listen' %}" class="{% if request.resolver_match.url_name == 'listen' %}active{% endif %}">
+                    <i class="fas fa-headphones"></i> Слушать
+                </a></li>
+            </ul>
+        </div>
+    </nav>
+
+    <!-- Main Content -->
+    <main>
+        {% block content %}{% endblock %}
+    </main>
+
+    <!-- Footer -->
+    <footer class="footer">
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>☪ Quran Online</h3>
+                    <p>Читайте и слушайте Священный Коран онлайн. Бесплатно для всех мусульман.</p>
+                </div>
+                <div class="footer-section">
+                    <h3>Навигация</h3>
+                    <ul>
+                        <li><a href="{% url 'quran:index' %}">Главная</a></li>
+                        <li><a href="{% url 'quran:surah_list' %}">Суры</a></li>
+                        <li><a href="{% url 'quran:listen' %}">Слушать</a></li>
+                    </ul>
+                </div>
+                <div class="footer-section">
+                    <h3>О проекте</h3>
+                    <p>Бисмиллях ир-Рахман ир-Рахим. Этот проект создан для распространения знания Корана.</p>
+                </div>
+            </div>
+            <div class="footer-bottom">
+                <p>بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ</p>
+                <p>&copy; 2026 Quran Online. Все права принадлежат Аллаху.</p>
+            </div>
+        </div>
+    </footer>
+
+    <!-- JavaScript -->
+    <script src="{% static 'quran/js/main.js' %}"></script>
+    {% block extra_js %}{% endblock %}
+</body>
+</html>

@@ -1,0 +1,127 @@
+{% extends 'quran/base.html' %}
+
+{% block title %}{{ surah.name_latin }}{% endblock %}
+
+{% block content %}
+<!-- Surah Header -->
+<section class="surah-header">
+    <div class="container">
+        <div class="surah-title-block">
+            <div class="surah-number-big">{{ surah.number }}</div>
+            <div>
+                <h1 class="surah-name-arabic-big">{{ surah.name_arabic }}</h1>
+                <h2 class="surah-name-latin-big">{{ surah.name_latin }}</h2>
+                <p class="surah-translation">{{ surah.name_translation }} • {{ surah.ayah_count }} аятов • {{ surah.revelation_type }}</p>
+            </div>
+        </div>
+
+        <!-- Audio Player -->
+        <div class="audio-player-bar">
+            <div class="player-reciter-select">
+                <label for="reciterSelect"><i class="fas fa-user"></i> Чтец:</label>
+                <select id="reciterSelect" class="select-styled">
+                    {% for reciter in reciters %}
+                    <option value="{{ reciter.audio_base_url }}/{{ surah.number|stringformat:'03d' }}.mp3"
+                            data-name="{{ reciter.name }}">
+                        {{ reciter.name }} ({{ reciter.name_arabic }})
+                    </option>
+                    {% endfor %}
+                </select>
+            </div>
+            <div class="player-controls">
+                <audio id="surahAudio" controls>
+                    {% if reciters %}
+                    <source src="{{ reciters.0.audio_base_url }}/{{ surah.number|stringformat:'03d' }}.mp3" type="audio/mpeg">
+                    {% endif %}
+                </audio>
+            </div>
+        </div>
+
+        <!-- Navigation -->
+        <div class="surah-nav">
+            {% if prev_surah %}
+            <a href="{% url 'quran:surah_detail' prev_surah.number %}" class="btn btn-outline btn-sm">
+                <i class="fas fa-arrow-left"></i> {{ prev_surah.name_latin }}
+            </a>
+            {% else %}
+            <span></span>
+            {% endif %}
+
+            <a href="{% url 'quran:surah_list' %}" class="btn btn-outline btn-sm">
+                <i class="fas fa-list"></i> Все суры
+            </a>
+
+            {% if next_surah %}
+            <a href="{% url 'quran:surah_detail' next_surah.number %}" class="btn btn-outline btn-sm">
+                {{ next_surah.name_latin }} <i class="fas fa-arrow-right"></i>
+            </a>
+            {% else %}
+            <span></span>
+            {% endif %}
+        </div>
+    </div>
+</section>
+
+<!-- Bismillah -->
+{% if surah.number != 1 and surah.number != 9 %}
+<div class="bismillah">
+    بِسْمِ ٱللَّهِ ٱلرَّحْمَـٰنِ ٱلرَّحِيمِ
+</div>
+{% endif %}
+
+<!-- Ayahs -->
+<section class="section ayahs-section">
+    <div class="container">
+        <div class="ayahs-list">
+            {% for ayah in ayahs %}
+            <div class="ayah-card" id="ayah-{{ ayah.number }}">
+                <div class="ayah-number-badge">{{ ayah.number }}</div>
+                <div class="ayah-content">
+                    <p class="ayah-arabic">{{ ayah.text_arabic }}</p>
+                    {% if ayah.text_translation %}
+                    <p class="ayah-translation">{{ ayah.text_translation }}</p>
+                    {% endif %}
+                </div>
+            </div>
+            {% endfor %}
+        </div>
+
+        <!-- Bottom Navigation -->
+        <div class="surah-nav bottom-nav">
+            {% if prev_surah %}
+            <a href="{% url 'quran:surah_detail' prev_surah.number %}" class="btn btn-primary">
+                <i class="fas fa-arrow-left"></i> {{ prev_surah.name_latin }}
+            </a>
+            {% else %}
+            <span></span>
+            {% endif %}
+
+            {% if next_surah %}
+            <a href="{% url 'quran:surah_detail' next_surah.number %}" class="btn btn-primary">
+                {{ next_surah.name_latin }} <i class="fas fa-arrow-right"></i>
+            </a>
+            {% else %}
+            <span></span>
+            {% endif %}
+        </div>
+    </div>
+</section>
+{% endblock %}
+
+{% block extra_js %}
+<script>
+    // Reciter selector for audio player
+    const reciterSelect = document.getElementById('reciterSelect');
+    const surahAudio = document.getElementById('surahAudio');
+
+    if (reciterSelect && surahAudio) {
+        reciterSelect.addEventListener('change', function() {
+            const wasPlaying = !surahAudio.paused;
+            surahAudio.src = this.value;
+            if (wasPlaying) {
+                surahAudio.play();
+            }
+        });
+    }
+</script>
+{% endblock %}

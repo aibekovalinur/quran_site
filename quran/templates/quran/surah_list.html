@@ -1,0 +1,47 @@
+{% extends 'quran/base.html' %}
+
+{% block title %}Все суры{% endblock %}
+
+{% block content %}
+<section class="section page-header">
+    <div class="container">
+        <h1 class="page-title">📖 Суры Корана</h1>
+        <p class="page-subtitle">Все 114 сур Священного Корана</p>
+
+        <!-- Search -->
+        <div class="search-box">
+            <form method="get" action="{% url 'quran:surah_list' %}">
+                <div class="search-input-wrapper">
+                    <i class="fas fa-search"></i>
+                    <input type="text" name="q" value="{{ query }}" placeholder="Поиск суры по названию..." class="search-input" id="surahSearch">
+                </div>
+            </form>
+        </div>
+    </div>
+</section>
+
+<section class="section">
+    <div class="container">
+        <div class="surah-grid" id="surahGrid">
+            {% for surah in surahs %}
+            <a href="{% url 'quran:surah_detail' surah.number %}" class="surah-card">
+                <div class="surah-number">{{ surah.number }}</div>
+                <div class="surah-info">
+                    <div class="surah-name-arabic">{{ surah.name_arabic }}</div>
+                    <div class="surah-name-latin">{{ surah.name_latin }}</div>
+                    <div class="surah-meta">{{ surah.name_translation }} • {{ surah.ayah_count }} аятов</div>
+                </div>
+                <div class="surah-type {{ surah.revelation_type|lower }}">
+                    {{ surah.revelation_type }}
+                </div>
+            </a>
+            {% empty %}
+            <div class="empty-state">
+                <i class="fas fa-search"></i>
+                <p>Суры не найдены</p>
+            </div>
+            {% endfor %}
+        </div>
+    </div>
+</section>
+{% endblock %}
